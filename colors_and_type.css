@@ -1,0 +1,283 @@
+/* =========================================================
+   The Good — Colors & Type
+   Maps brand tokens to semantic CSS variables and base styles.
+   Source: thegood-tokens.css (CSS Peeper + DevTools audit of thegood.com)
+   ========================================================= */
+
+/* ---- Webfonts ----
+   Nunito Sans: brand-uploaded variable fonts (local).
+   IBM Plex Mono: Google Fonts (closest available source). */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('fonts/NunitoSans-VariableFont_YTLC_opsz_wdth_wght.ttf') format('truetype-variations');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('fonts/NunitoSans-Italic-VariableFont_YTLC_opsz_wdth_wght.ttf') format('truetype-variations');
+  font-weight: 200 1000;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* =========================================================
+     COLOR TOKENS — primitive
+     ========================================================= */
+  --cro-blue:          #0277C0;   /* primary accent */
+  --cro-blue-75:       #4A9AD0;
+  --cro-blue-50:       #87B8DF;
+  --cro-blue-25:       #C3DDF0;
+  --cro-primary:       #0277C0;
+  --cro-primary-dark:  #015A91;   /* hover / active */
+  --cro-green:         #50E3C2;   /* secondary accent / success */
+
+  --cro-black:         #000000;
+  --cro-gray-75:       #404040;
+  --cro-gray-50:       #7F7F7F;
+  --cro-gray-25:       #BFBFBF;
+  --cro-white:         #FFFFFF;
+  --cro-bg-alt:        #F7F7F7;
+
+  /* =========================================================
+     COLOR TOKENS — semantic
+     ========================================================= */
+  --fg-1:              var(--cro-black);    /* primary text — headings */
+  --fg-2:              var(--cro-gray-75);  /* body text */
+  --fg-3:              var(--cro-gray-50);  /* secondary / captions */
+  --fg-4:              var(--cro-gray-25);  /* disabled / dividers */
+  --fg-on-primary:     var(--cro-white);
+
+  --bg-1:              var(--cro-white);    /* page bg */
+  --bg-2:              var(--cro-bg-alt);   /* alternating section bg */
+  --bg-3:              #EFEFEF;             /* code block bg */
+  --bg-inverse:        var(--cro-black);
+
+  --accent:            var(--cro-blue);
+  --accent-hover:      var(--cro-primary-dark);
+  --accent-soft:       var(--cro-blue-25);
+  --success:           var(--cro-green);
+
+  --border:            var(--cro-gray-25);
+  --border-strong:     var(--cro-gray-50);
+  --divider:           #ECECEC;
+
+  /* =========================================================
+     TYPOGRAPHY TOKENS
+     ========================================================= */
+  --font-sans:  'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:  'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  --font-display: var(--font-sans);
+
+  /* Weights — system uses 400 + 800 almost exclusively */
+  --weight-regular: 400;
+  --weight-bold:    700;
+  --weight-black:   800;
+
+  /* =========================================================
+     SPACING / LAYOUT
+     ========================================================= */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  --container-max: 1000px;       /* deliberately narrow vs typical 1200–1440 */
+  --section-padding-y: 96px;
+  --section-padding-x: 32px;
+
+  /* =========================================================
+     BORDERS / RADIUS / SHADOW
+     ========================================================= */
+  --radius:    4px;
+  --radius-sm: 4px;
+  --radius-pill: 999px;          /* used sparingly for pills */
+
+  --shadow-sm: 0 1px 3px  rgb(0 0 0 / 0.10);
+  --shadow:    0 4px 6px  rgb(0 0 0 / 0.10);
+  --shadow-lg: 0 10px 20px rgb(0 0 0 / 0.10);
+
+  /* =========================================================
+     MOTION
+     ========================================================= */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration:      200ms;
+  --duration-slow: 300ms;
+}
+
+/* =========================================================
+   BASE TYPE STYLES — apply to bare semantic elements
+   ========================================================= */
+html, body {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 27px;
+  font-weight: var(--weight-regular);
+  color: var(--fg-2);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: 50px;
+  line-height: 58px;
+  font-weight: var(--weight-black);
+  color: var(--fg-1);
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-5);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 50px;
+  font-weight: var(--weight-black);
+  color: var(--fg-1);
+  margin: 0 0 var(--space-5);
+}
+
+h3, .h3 {
+  font-size: 36px;
+  line-height: 46px;
+  font-weight: var(--weight-black);
+  color: var(--fg-1);
+  margin: 0 0 var(--space-4);
+}
+
+h4, .h4 {
+  font-size: 28px;
+  line-height: 40px;
+  font-weight: var(--weight-black);
+  color: var(--fg-1);
+  margin: 0 0 var(--space-4);
+}
+
+.display {
+  font-size: 55px;
+  line-height: 78.5px;
+  font-weight: var(--weight-black);
+  color: var(--fg-1);
+}
+
+.body-lg {
+  font-size: 24px;
+  line-height: 36px;
+  font-weight: var(--weight-regular);
+}
+
+.body-md {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: var(--weight-regular);
+}
+
+p, .body {
+  font-size: 18px;
+  line-height: 27px;
+  font-weight: var(--weight-regular);
+  margin: 0 0 var(--space-4);
+}
+
+.body-sm, small {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: var(--weight-regular);
+}
+
+.caption {
+  font-size: 13px;
+  line-height: 19.5px;
+  font-weight: var(--weight-regular);
+  color: var(--fg-3);
+}
+
+/* Eyebrow — uppercase + tracked, used above headings */
+.eyebrow {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: var(--weight-black);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+
+/* Label — text typed in caps, NOT auto-uppercased (e.g. "TRUSTED BY:") */
+.label-tracked {
+  font-size: 18px;
+  line-height: 27px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 3px;
+  color: var(--fg-3);
+}
+
+/* Tracked link — recurring "GET IN TOUCH" style */
+.link-tracked {
+  font-size: 18px;
+  line-height: 27px;
+  font-weight: var(--weight-regular);
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.link-tracked:hover { color: var(--accent-hover); }
+
+/* Continue-reading style link — bolder, no tracking */
+.link-continue {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: var(--weight-bold);
+  color: var(--accent);
+  text-decoration: none;
+}
+.link-continue::after { content: " →"; }
+.link-continue:hover { color: var(--accent-hover); }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease-standard);
+}
+a:hover { color: var(--accent-hover); }
+
+code, kbd, samp, pre, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+code {
+  background: var(--bg-3);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+  color: var(--fg-1);
+}
+
+pre {
+  background: var(--bg-3);
+  padding: var(--space-5);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  line-height: 1.6;
+}
+pre code { background: transparent; padding: 0; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--divider);
+  margin: var(--space-7) 0;
+}
+
+::selection { background: var(--accent-soft); color: var(--fg-1); }

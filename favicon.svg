@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Blue rounded background -->
+  <rect width="32" height="32" rx="7" fill="#1B87D4"/>
+  <!-- Green checkmark — top left -->
+  <polyline points="5.5,9.5 8,12.5 12.5,5.5"
+    stroke="#50E3C2" stroke-width="2.2"
+    fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Three ascending white bars — 5px padding on L / R / B, even 2px gaps -->
+  <!-- all bars share bottom baseline y=27 (bottom padding = 5px)          -->
+  <!-- left edge x=5 (left pad 5), right edge x=27 (right pad 5)           -->
+  <rect x="5"  y="20" width="6" height="7"  rx="1" fill="white"/>
+  <rect x="13" y="14" width="6" height="13" rx="1" fill="white"/>
+  <rect x="21" y="9"  width="6" height="18" rx="1" fill="white"/>
+</svg>
