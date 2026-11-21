@@ -33,7 +33,7 @@ html, body {
   justify-content: space-between;
   height: 52px;
   padding: 0 24px;
-  background: #fff;
+  background: var(--bg-1);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   overflow: hidden;
@@ -330,7 +330,7 @@ html, body {
 .btn-primary:disabled { background: var(--fg-4); color: var(--fg-3); cursor: not-allowed; }
 
 .btn-secondary {
-  background: #fff;
+  background: var(--bg-1);
   color: var(--accent);
   border: 1px solid var(--accent);
   padding: 11px 21px;
@@ -359,7 +359,7 @@ html, body {
   padding: 11px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--bg-1);
   color: var(--fg-1);
   transition: border-color var(--duration) var(--ease-standard);
 }
@@ -401,7 +401,7 @@ html, body {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--bg-1);
   color: var(--fg-1);
   resize: vertical;
   min-height: 140px;
@@ -471,7 +471,7 @@ html, body {
 }
 
 .stat {
-  background: #fff;
+  background: var(--bg-1);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px 20px;
@@ -508,7 +508,7 @@ html, body {
   gap: 14px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--divider);
-  background: #fff;
+  background: var(--bg-1);
 }
 .finding:last-child { border-bottom: 0; }
 .finding-meta {
@@ -597,7 +597,7 @@ html, body {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: #fff;
+  background: var(--bg-1);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
@@ -618,7 +618,7 @@ html, body {
   border-radius: 2px;
   display: grid;
   place-items: center;
-  background: #fff;
+  background: var(--bg-1);
   flex-shrink: 0;
 }
 .chip-toggle.on .check {
@@ -632,7 +632,7 @@ html, body {
 
 /* ---------- Report mode ---------- */
 .report-page {
-  background: #fff;
+  background: var(--bg-1);
   max-width: 880px;
   margin: 0 auto;
   padding: 64px 72px;

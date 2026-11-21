@@ -9,7 +9,7 @@ const DEFAULT_TWEAKS = /*EDITMODE-BEGIN*/{
 }/*EDITMODE-END*/;
 
 // ── Set your OAuth Client ID here once and it pre-fills for every teammate ──
-const DEFAULT_CLIENT_ID = /*EDITMODE-BEGIN*/"761435930455-8pifa790anvbnfmvt5pqr4maq4p8faud.apps.googleusercontent.com"/*EDITMODE-END*/;
+const DEFAULT_CLIENT_ID = /*EDITMODE-BEGIN*/"279421537358-65oaafqicevvkt59bg910uv9n0l60o9h.apps.googleusercontent.com"/*EDITMODE-END*/;
 
 async function runRealAudit(enabled, creds) {
   const hasAuth = creds.oauthToken || creds.serviceAccount;
@@ -162,8 +162,8 @@ const App = () => {
       {/* TOPBAR */}
       <div className="topbar">
         <div className="topbar-brand" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src="favicon.svg" alt="Analytics Audit" style={{ height: 28, width: 28, borderRadius: 6, display: "block", flexShrink: 0 }} />
-          <img src="thegood-logo.svg" alt="The Good" style={{ height: 22, width: "auto", display: "block" }} />
+          <img src="favicon.svg" alt="Analytics Canary" style={{ height: 28, width: 28, borderRadius: 6, display: "block", flexShrink: 0 }} />
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 500, letterSpacing: 0, color: "var(--fg-1)" }}>Analytics Canary</span>
         </div>
         <div className="topbar-meta">
           {phase === "done" && (
@@ -199,7 +199,7 @@ const App = () => {
               </span>
             </>
           )}
-          <span className="topbar-tool">Analytics Audit</span>
+
         </div>
       </div>
 

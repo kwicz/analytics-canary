@@ -5,7 +5,7 @@ const { Icon, Badge, fmtFull, Tooltip } = window;
 /* =============================================================
    SETUP — choose modules + credentials + Run
    ============================================================= */
-const LS_KEY = "analytics-audit-client-id";
+const LS_KEY = "analytics-canary-client-id";
 
 const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
   const [enabled, setEnabled] = useState(defaultEnabled || { gtm: true, ga4: true, bq: true });
@@ -140,7 +140,7 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
         <div className="eyebrow" style={{ marginBottom: 16 }}>Run an audit</div>
         <h1 style={{ marginBottom: 12 }}>The audit you wish your<br />team had run six months ago.</h1>
         <p style={{ fontSize: 18, color: "var(--fg-2)", maxWidth: 680, lineHeight: 1.6 }}>
-          Analytics Audit reads your GTM container, your GA4 property, and (optionally) your BigQuery export to surface broken tags, missing events, and data quality gaps — the kind of measurement issues GA4's UI silently hides.
+          Analytics Canary reads your GTM container, your GA4 property, and (optionally) your BigQuery export to surface broken tags, missing events, and data quality gaps — the kind of measurement issues GA4's UI silently hides.
         </p>
         <p style={{ fontSize: 13, color: "var(--fg-3)", marginTop: 12, fontFamily: "var(--font-mono)" }}>
           read-only · session-only credentials · data never stored
@@ -643,7 +643,7 @@ const Running = ({ enabled, creds, onDone, auditPromise }) => {
         fontFamily: "var(--font-mono)", fontSize: 12.5, lineHeight: 1.85, minHeight: 360,
       }}>
         <div style={{ color: "#7F7F7F", marginBottom: 8 }}>
-          $ analytics-audit run{(creds?.gtm) ? ` --container=${creds.gtm}` : ""}
+          $ analytics-canary run{(creds?.gtm) ? ` --container=${creds.gtm}` : ""}
           {(creds?.ga4PropertyId) ? ` --property=${creds.ga4PropertyId}` : ""}
         </div>
         {visible.map((s, i) => (
