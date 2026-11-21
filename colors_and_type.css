@@ -49,6 +49,16 @@
   --accent-soft:    #F2E0E5;
   --success:        var(--accent-deepsage);
 
+  /* =========================================================
+     LEGACY ALIAS — old CRO design system → soft-summer palette
+     ========================================================= */
+  --cro-white:        #FFFFFF;
+  --cro-green:        #62C4A0;
+  --cro-gray-25:      var(--surface-line);
+  --cro-blue-25:      var(--accent-soft);
+  --cro-blue-50:      rgba(184, 101, 122, 0.25);
+  --cro-primary-dark: var(--accent-hover);
+
   --border:         var(--surface-line);
   --border-strong:  var(--ink-300);
   --divider:        var(--surface-line);

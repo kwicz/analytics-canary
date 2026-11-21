@@ -199,7 +199,8 @@ const App = () => {
 
       {/* BODY */}
       <div className="body">
-        {/* SIDEBAR */}
+        {/* SIDEBAR — hidden during initial setup, appears after first audit */}
+        {phase !== "idle" && (
         <aside className="sidebar">
           <div>
             <div className="sidebar-section-label">Workflow</div>
@@ -265,6 +266,7 @@ const App = () => {
             </div>
           </div>
         </aside>
+        )}
 
         {/* MAIN */}
         <main className="main">

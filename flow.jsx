@@ -133,339 +133,338 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
   };
 
   return (
-    <>
-      <div style={{ marginBottom: 48 }}>
-        <div className="eyebrow" style={{ marginBottom: 16 }}>Run an audit</div>
-        <h1 style={{ marginBottom: 12 }}>The audit you wish your<br />team had run six months ago.</h1>
-        <p style={{ fontSize: 18, color: "var(--fg-2)", maxWidth: 680, lineHeight: 1.6 }}>
-          Analytics Canary reads your GTM container, your GA4 property, and (optionally) your BigQuery export to surface broken tags, missing events, and data quality gaps — the kind of measurement issues GA4's UI silently hides.
-        </p>
-        <p style={{ fontSize: 13, color: "var(--fg-3)", marginTop: 12, fontFamily: "var(--font-mono)" }}>
-          read-only · session-only credentials · data never stored
+    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      {/* ── Hero ── */}
+      <div style={{ marginBottom: 56, paddingTop: 8 }}>
+        <div style={{
+          fontFamily: "var(--font-accent)",
+          fontSize: 20,
+          color: "var(--accent)",
+          marginBottom: 8,
+          display: "inline-block",
+          transform: "rotate(-1.5deg)",
+          lineHeight: 1,
+        }}>for analytics &amp; CRO teams</div>
+        <h1 style={{
+          fontSize: 56,
+          lineHeight: "60px",
+          fontStyle: "italic",
+          fontVariationSettings: '"opsz" 144, "SOFT" 55',
+          letterSpacing: "-0.02em",
+          margin: "0 0 20px",
+        }}>
+          The audit you wish your<br />team had run six months ago.
+        </h1>
+        <p style={{ fontSize: 16, color: "var(--fg-3)", lineHeight: 1.7, maxWidth: 500, margin: 0 }}>
+          Reads your GTM container, GA4 property, and BigQuery export — surfaces broken tags, missing events, and data quality gaps the platform silently hides.
         </p>
       </div>
 
-      <div className="section">
-        <div className="section-title">Select modules</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-          <ModuleToggle
-            num="01" name="GTM Container" desc="Tags, triggers, variables. Defined vs. firing on the live site."
-            on={enabled.gtm} onToggle={() => toggle("gtm")} icon="tag"
-          />
-          <ModuleToggle
-            num="02" name="GA4 Events" desc="30-day event hits, conversion health, recommended ecommerce events."
-            on={enabled.ga4} onToggle={() => toggle("ga4")} icon="bar"
-          />
-          <ModuleToggle
-            num="03" name="BigQuery Deep" desc="Parameter completeness, duplicate schemas, attribution gaps, data outages."
-            on={enabled.bq} onToggle={() => toggle("bq")} icon="db"
-          />
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-title">Credentials</div>
-        <div className="card">
-
-          {/* ── Auth method ── */}
-          <div style={{ marginBottom: 28 }}>
-              {creds.oauthToken ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: 8, flex: 1,
-                    padding: "10px 14px", borderRadius: 6,
-                    background: "rgba(98,196,160,0.08)", border: "1px solid rgba(98,196,160,0.3)",
-                  }}>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cro-green)", flexShrink: 0 }} />
-                    <span style={{ fontWeight: 600, color: "var(--fg-1)" }}>{creds.oauthEmail}</span>
-                    <span style={{ color: "var(--fg-3)", fontSize: 12 }}>— connected</span>
-                  </div>
-                  {Object.keys(lists.errors || {}).length > 0 && !lists.loading && (
-                    <button
-                      className="btn btn-primary"
-                      style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                      onClick={() => fetchLists(creds.oauthToken)}
-                    >
-                      ↻ Retry
-                    </button>
-                  )}
-                  <button
-                    className="btn"
-                    style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                    onClick={() => { setCreds({ ...creds, oauthToken: "", oauthEmail: "" }); setLists({ gtm: null, ga4: null, loading: false, errors: {} }); }}
-                  >
-                    Sign out
-                  </button>
-                </div>
-              ) : creds.clientId ? (
-                /* Client ID pre-filled — just show the button */
-                <div>
-                  <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 0", fontSize: 14 }} onClick={signIn}>
-                    Sign in with Google
-                  </button>
-                  <div className="input-help">
-                    {"Sign in with the Google account that has access to your clients' GTM containers, GA4 properties, and BigQuery datasets."}
-                  </div>
-                </div>
-              ) : (
-                /* No Client ID yet — show the input */
-                <div>
-                  <label className="input-label">
-                    OAuth Client ID
-                    <Tooltip content={
-                      <div>
-                        <div style={{ fontWeight: 800, color: "#fff", marginBottom: 8, fontSize: 11, letterSpacing: 0.8, textTransform: "uppercase" }}>One-time setup</div>
-                        {[
-                          <>Go to <span style={{ color: "#4A9AD0" }}>console.cloud.google.com</span> → APIs &amp; Services → Credentials</>,
-                          <>Click <strong style={{ color: "#fff" }}>Create Credentials</strong> → OAuth 2.0 Client ID → Web application</>,
-                          <>Under <strong style={{ color: "#fff" }}>Authorized JavaScript origins</strong> add <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>http://localhost:8080</span></>,
-                          <>Copy the Client ID — it ends in <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>.apps.googleusercontent.com</span></>,
-                        ].map((step, i) => (
-                          <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#7F7F7F", marginTop: 1, flexShrink: 0 }}>{i + 1}.</span>
-                            <span>{step}</span>
-                          </div>
-                        ))}
+      {/* ── Step 1: Sign in (shown only before auth) ── */}
+      {!creds.oauthToken && (
+        <div>
+          {creds.clientId ? (
+            <>
+              <button
+                className="btn btn-primary"
+                style={{ width: "100%", justifyContent: "center", padding: "15px 0", fontSize: 15 }}
+                onClick={signIn}
+              >
+                Sign in with Google
+              </button>
+              <p style={{ textAlign: "center", marginTop: 14, marginBottom: 0, fontSize: 12, color: "var(--fg-4)", fontFamily: "var(--font-mono)" }}>
+                read-only · session-only · never stored
+              </p>
+            </>
+          ) : (
+            <>
+              <label className="input-label">
+                OAuth Client ID
+                <Tooltip content={
+                  <div>
+                    <div style={{ fontWeight: 800, color: "#fff", marginBottom: 8, fontSize: 11, letterSpacing: 0.8, textTransform: "uppercase" }}>One-time setup</div>
+                    {[
+                      <>Go to <span style={{ color: "#4A9AD0" }}>console.cloud.google.com</span> → APIs &amp; Services → Credentials</>,
+                      <>Click <strong style={{ color: "#fff" }}>Create Credentials</strong> → OAuth 2.0 Client ID → Web application</>,
+                      <>Under <strong style={{ color: "#fff" }}>Authorized JavaScript origins</strong> add <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>http://localhost:8080</span></>,
+                      <>Copy the Client ID — it ends in <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>.apps.googleusercontent.com</span></>,
+                    ].map((step, i) => (
+                      <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#7F7F7F", marginTop: 1, flexShrink: 0 }}>{i + 1}.</span>
+                        <span>{step}</span>
                       </div>
-                    } />
-                  </label>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <input
-                      className="input"
-                      style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 11.5 }}
-                      placeholder="123456789-xxxx.apps.googleusercontent.com"
-                      value={creds.clientId}
-                      onChange={e => setCreds({ ...creds, clientId: e.target.value, oauthToken: "", oauthEmail: "" })}
-                    />
-                    <button
-                      className="btn btn-primary"
-                      style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                      onClick={signIn}
-                      disabled={!creds.clientId.trim()}
-                    >
-                      Sign in with Google
-                    </button>
+                    ))}
                   </div>
-                  <div className="input-help">Paste your OAuth Client ID from Google Cloud Console, then sign in.</div>
-                </div>
-              )}
+                } />
+              </label>
+              <div style={{ display: "flex", gap: 10 }}>
+                <input
+                  className="input"
+                  style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 11.5 }}
+                  placeholder="123456789-xxxx.apps.googleusercontent.com"
+                  value={creds.clientId}
+                  onChange={e => setCreds({ ...creds, clientId: e.target.value, oauthToken: "", oauthEmail: "" })}
+                />
+                <button
+                  className="btn btn-primary"
+                  style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                  onClick={signIn}
+                  disabled={!creds.clientId.trim()}
+                >
+                  Sign in with Google
+                </button>
+              </div>
+              <div className="input-help">Paste your OAuth Client ID from Google Cloud Console, then sign in.</div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Steps 2+: shown after sign-in ── */}
+      {creds.oauthToken && (
+        <>
+          {/* Signed-in strip */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 8, flex: 1,
+              padding: "10px 14px", borderRadius: 6,
+              background: "rgba(98,196,160,0.08)", border: "1px solid rgba(98,196,160,0.3)",
+            }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cro-green)", flexShrink: 0 }} />
+              <span style={{ fontWeight: 600, color: "var(--fg-1)" }}>{creds.oauthEmail}</span>
+              <span style={{ color: "var(--fg-3)", fontSize: 12 }}>— connected</span>
             </div>
-
-          {/* ── Module-specific IDs ── */}
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, opacity: hasAuth ? 1 : 0.45, transition: "opacity 200ms" }}>
-            {enabled.gtm && (
-              <div>
-                <label className="input-label">GTM Container</label>
-                {lists.loading ? (
-                  <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading containers…</div>
-                ) : lists.gtm ? (
-                  <select className="input" value={creds.gtm}
-                    style={{ cursor: "pointer" }}
-                    onChange={e => {
-                      const allContainers = lists.gtm.flatMap(a => a.containers);
-                      const selected = allContainers.find(c => c.publicId === e.target.value);
-                      setCreds({ ...creds, gtm: e.target.value, gtmPath: selected?.path || "" });
-                    }}>
-                    <option value="">— Select a container —</option>
-                    {lists.gtm.map(acct => (
-                      <optgroup key={acct.accountId} label={acct.accountName}>
-                        {acct.containers.map(c => (
-                          <option key={c.publicId} value={c.publicId}>{c.name} ({c.publicId})</option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                ) : (
-                  <input className="input" placeholder="GTM-XXXXXXX" value={creds.gtm} disabled={!hasAuth} onChange={e => setCreds({ ...creds, gtm: e.target.value })} />
-                )}
-                {lists.errors?.gtm && (
-                  <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
-                    {lists.errors.gtm.includes("429") ? "Rate limit hit — wait ~60s then click ↻ Retry above." : lists.errors.gtm}
-                  </div>
-                )}
-                <div className="input-help">
-                  {lists.gtm ? `${lists.gtm.flatMap(a => a.containers).length} container(s) available` : !lists.errors?.gtm ? "Sign in above to see your containers." : ""}
-                </div>
-              </div>
+            {Object.keys(lists.errors || {}).length > 0 && !lists.loading && (
+              <button
+                className="btn btn-primary"
+                style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                onClick={() => fetchLists(creds.oauthToken)}
+              >
+                ↻ Retry
+              </button>
             )}
-            {enabled.ga4 && (
-              <div>
-                <label className="input-label">GA4 Property</label>
-                {lists.loading ? (
-                  <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading properties…</div>
-                ) : lists.ga4 ? (
-                  <select className="input" value={creds.ga4PropertyId} onChange={e => setCreds({ ...creds, ga4PropertyId: e.target.value })}
-                    style={{ cursor: "pointer" }}>
-                    <option value="">— Select a property —</option>
-                    {lists.ga4.map(acct => (
-                      <optgroup key={acct.accountId} label={acct.accountName}>
-                        {acct.properties.map(p => (
-                          <option key={p.propertyId} value={p.propertyId}>{p.name} ({p.propertyId})</option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                ) : (
-                  <input className="input" placeholder="123456789" value={creds.ga4PropertyId} disabled={!hasAuth} onChange={e => setCreds({ ...creds, ga4PropertyId: e.target.value })} />
-                )}
-                {lists.errors?.ga4 && (
-                  <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
-                    {lists.errors.ga4.includes("429") ? "Rate limit hit — wait ~60s then click ↻ Retry above." : lists.errors.ga4}
-                  </div>
-                )}
-                <div className="input-help">
-                  {lists.ga4 ? `${lists.ga4.flatMap(a => a.properties).length} property(s) available` : !lists.errors?.ga4 ? "Sign in above to see your properties." : ""}
-                </div>
-              </div>
-            )}
-            {enabled.bq && (
-              <>
+            <button
+              className="btn"
+              style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+              onClick={() => { setCreds({ ...creds, oauthToken: "", oauthEmail: "" }); setLists({ gtm: null, ga4: null, loading: false, errors: {} }); }}
+            >
+              Sign out
+            </button>
+          </div>
+
+          {/* Module cards */}
+          <div className="section">
+            <div className="section-title">Select modules</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+              <ModuleToggle num="01" name="GTM Container" desc="Tags, triggers, variables. Defined vs. firing on the live site." on={enabled.gtm} onToggle={() => toggle("gtm")} icon="tag">
                 <div>
-                  <label className="input-label">BigQuery Project</label>
+                  <label className="input-label">Container</label>
                   {lists.loading ? (
-                    <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading projects…</div>
-                  ) : lists.bq ? (
-                    <select className="input" value={creds.bqProject}
-                      style={{ cursor: "pointer" }}
+                    <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading containers…</div>
+                  ) : lists.gtm ? (
+                    <select className="input" value={creds.gtm} style={{ cursor: "pointer" }}
                       onChange={e => {
-                        const p = e.target.value;
-                        setCreds(prev => ({ ...prev, bqProject: p, bqDataset: "" }));
-                        setBqDatasets(null);
-                        if (p && creds.oauthToken) fetchDatasets(creds.oauthToken, p);
+                        const allContainers = lists.gtm.flatMap(a => a.containers);
+                        const selected = allContainers.find(c => c.publicId === e.target.value);
+                        setCreds({ ...creds, gtm: e.target.value, gtmPath: selected?.path || "" });
                       }}>
-                      <option value="">— Select a project —</option>
-                      {lists.bq.map(p => (
-                        <option key={p.projectId} value={p.projectId}>{p.name} ({p.projectId})</option>
+                      <option value="">— Select a container —</option>
+                      {lists.gtm.map(acct => (
+                        <optgroup key={acct.accountId} label={acct.accountName}>
+                          {acct.containers.map(c => (
+                            <option key={c.publicId} value={c.publicId}>{c.name} ({c.publicId})</option>
+                          ))}
+                        </optgroup>
                       ))}
                     </select>
                   ) : (
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <input className="input" style={{ flex: 1 }} placeholder="my-project-123" value={creds.bqProject}
-                        disabled={!hasAuth}
-                        onChange={e => { setCreds(prev => ({ ...prev, bqProject: e.target.value, bqDataset: "" })); setBqDatasets(null); }} />
-                      {creds.bqProject && creds.oauthToken && (
-                        <button className="btn btn-ghost" style={{ flexShrink: 0 }} onClick={() => fetchDatasets(creds.oauthToken, creds.bqProject)}>
-                          Fetch datasets
-                        </button>
-                      )}
-                    </div>
+                    <input className="input" placeholder="GTM-XXXXXXX" value={creds.gtm} onChange={e => setCreds({ ...creds, gtm: e.target.value })} />
                   )}
-                  {lists.errors?.bq && (
+                  {lists.errors?.gtm && (
                     <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
-                      {lists.errors.bq}
+                      {lists.errors.gtm.includes("429") ? "Rate limit hit — wait ~60s then click ↻ Retry above." : lists.errors.gtm}
                     </div>
                   )}
-                  <div className="input-help">
-                    {lists.bq ? `${lists.bq.length} project(s) available` : !lists.errors?.bq ? "Sign in above to see your projects." : ""}
-                  </div>
+                  {lists.gtm && <div className="input-help">{lists.gtm.flatMap(a => a.containers).length} container(s) available</div>}
                 </div>
+              </ModuleToggle>
+
+              <ModuleToggle num="02" name="GA4 Events" desc="30-day event hits, conversion health, recommended ecommerce events." on={enabled.ga4} onToggle={() => toggle("ga4")} icon="bar">
                 <div>
-                  <label className="input-label">GA4 BigQuery Dataset</label>
-                  {bqDatasetsLoading ? (
-                    <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading datasets…</div>
-                  ) : bqDatasets && bqDatasets.length > 0 ? (
-                    <select className="input" value={creds.bqDataset}
-                      style={{ cursor: "pointer" }}
-                      onChange={e => setCreds(prev => ({ ...prev, bqDataset: e.target.value }))}>
-                      <option value="">— Select a dataset —</option>
-                      {bqDatasets.filter(d => d.id.startsWith("analytics_")).length > 0 && (
-                        <optgroup label="GA4 exports (analytics_*)">
-                          {bqDatasets.filter(d => d.id.startsWith("analytics_")).map(d => (
-                            <option key={d.id} value={d.id}>{d.id}</option>
+                  <label className="input-label">Property</label>
+                  {lists.loading ? (
+                    <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading properties…</div>
+                  ) : lists.ga4 ? (
+                    <select className="input" value={creds.ga4PropertyId} style={{ cursor: "pointer" }}
+                      onChange={e => setCreds({ ...creds, ga4PropertyId: e.target.value })}>
+                      <option value="">— Select a property —</option>
+                      {lists.ga4.map(acct => (
+                        <optgroup key={acct.accountId} label={acct.accountName}>
+                          {acct.properties.map(p => (
+                            <option key={p.propertyId} value={p.propertyId}>{p.name} ({p.propertyId})</option>
                           ))}
                         </optgroup>
-                      )}
-                      {bqDatasets.filter(d => !d.id.startsWith("analytics_")).length > 0 && (
-                        <optgroup label="Other datasets">
-                          {bqDatasets.filter(d => !d.id.startsWith("analytics_")).map(d => (
-                            <option key={d.id} value={d.id}>{d.id}</option>
-                          ))}
-                        </optgroup>
-                      )}
+                      ))}
                     </select>
                   ) : (
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <input className="input" style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 12 }}
-                        placeholder="analytics_123456789"
-                        value={creds.bqDataset}
-                        disabled={!hasAuth}
-                        onChange={e => setCreds(prev => ({ ...prev, bqDataset: e.target.value }))} />
-                      {creds.bqProject && creds.oauthToken && (
-                        <button className="btn btn-ghost" style={{ flexShrink: 0 }} onClick={() => fetchDatasets(creds.oauthToken, creds.bqProject)}>
-                          ↻ Retry
-                        </button>
-                      )}
-                    </div>
+                    <input className="input" placeholder="123456789" value={creds.ga4PropertyId} onChange={e => setCreds({ ...creds, ga4PropertyId: e.target.value })} />
                   )}
-                  {bqDatasetsError && (
+                  {lists.errors?.ga4 && (
                     <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
-                      {bqDatasetsError}
+                      {lists.errors.ga4.includes("429") ? "Rate limit hit — wait ~60s then click ↻ Retry above." : lists.errors.ga4}
                     </div>
                   )}
-                  <div className="input-help">
-                    {bqDatasets && bqDatasets.length > 0
-                      ? `${bqDatasets.filter(d => d.id.startsWith("analytics_")).length} GA4 export dataset(s) · ${bqDatasets.length} total`
-                      : bqDatasets && bqDatasets.length === 0
-                        ? "No datasets found in this project — check the GA4 BQ export is enabled, or type the dataset name (e.g. analytics_123456789)."
-                        : !creds.bqProject
-                          ? "Select a project first."
-                          : "Select a project and sign in to auto-load datasets."}
+                  {lists.ga4 && <div className="input-help">{lists.ga4.flatMap(a => a.properties).length} property(s) available</div>}
+                </div>
+              </ModuleToggle>
+
+              <ModuleToggle num="03" name="BigQuery Deep" desc="Parameter completeness, duplicate schemas, attribution gaps, data outages." on={enabled.bq} onToggle={() => toggle("bq")} icon="db">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                  <div>
+                    <label className="input-label">BigQuery Project</label>
+                    {lists.loading ? (
+                      <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading projects…</div>
+                    ) : lists.bq ? (
+                      <select className="input" value={creds.bqProject} style={{ cursor: "pointer" }}
+                        onChange={e => {
+                          const p = e.target.value;
+                          setCreds(prev => ({ ...prev, bqProject: p, bqDataset: "" }));
+                          setBqDatasets(null);
+                          if (p && creds.oauthToken) fetchDatasets(creds.oauthToken, p);
+                        }}>
+                        <option value="">— Select a project —</option>
+                        {lists.bq.map(p => (
+                          <option key={p.projectId} value={p.projectId}>{p.name} ({p.projectId})</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input className="input" style={{ flex: 1 }} placeholder="my-project-123" value={creds.bqProject}
+                          onChange={e => { setCreds(prev => ({ ...prev, bqProject: e.target.value, bqDataset: "" })); setBqDatasets(null); }} />
+                        {creds.bqProject && (
+                          <button className="btn btn-ghost" style={{ flexShrink: 0 }} onClick={() => fetchDatasets(creds.oauthToken, creds.bqProject)}>
+                            Fetch datasets
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {lists.errors?.bq && (
+                      <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
+                        {lists.errors.bq}
+                      </div>
+                    )}
+                    {lists.bq && <div className="input-help">{lists.bq.length} project(s) available</div>}
+                  </div>
+                  <div>
+                    <label className="input-label">GA4 BigQuery Dataset</label>
+                    {bqDatasetsLoading ? (
+                      <div className="input" style={{ color: "var(--fg-4)", fontStyle: "italic" }}>Loading datasets…</div>
+                    ) : bqDatasets && bqDatasets.length > 0 ? (
+                      <select className="input" value={creds.bqDataset} style={{ cursor: "pointer" }}
+                        onChange={e => setCreds(prev => ({ ...prev, bqDataset: e.target.value }))}>
+                        <option value="">— Select a dataset —</option>
+                        {bqDatasets.filter(d => d.id.startsWith("analytics_")).length > 0 && (
+                          <optgroup label="GA4 exports (analytics_*)">
+                            {bqDatasets.filter(d => d.id.startsWith("analytics_")).map(d => (
+                              <option key={d.id} value={d.id}>{d.id}</option>
+                            ))}
+                          </optgroup>
+                        )}
+                        {bqDatasets.filter(d => !d.id.startsWith("analytics_")).length > 0 && (
+                          <optgroup label="Other datasets">
+                            {bqDatasets.filter(d => !d.id.startsWith("analytics_")).map(d => (
+                              <option key={d.id} value={d.id}>{d.id}</option>
+                            ))}
+                          </optgroup>
+                        )}
+                      </select>
+                    ) : (
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <input className="input" style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 12 }}
+                          placeholder="analytics_123456789"
+                          value={creds.bqDataset}
+                          onChange={e => setCreds(prev => ({ ...prev, bqDataset: e.target.value }))} />
+                        {creds.bqProject && (
+                          <button className="btn btn-ghost" style={{ flexShrink: 0 }} onClick={() => fetchDatasets(creds.oauthToken, creds.bqProject)}>
+                            ↻ Retry
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    {bqDatasetsError && (
+                      <div style={{ fontSize: 11.5, color: "#E1493B", marginTop: 5, fontFamily: "var(--font-mono)", lineHeight: 1.4 }}>
+                        {bqDatasetsError}
+                      </div>
+                    )}
+                    <div className="input-help">
+                      {bqDatasets && bqDatasets.length > 0
+                        ? `${bqDatasets.filter(d => d.id.startsWith("analytics_")).length} GA4 export dataset(s) · ${bqDatasets.length} total`
+                        : bqDatasets && bqDatasets.length === 0
+                          ? "No datasets found — check GA4 BQ export is enabled, or type the dataset name."
+                          : !creds.bqProject ? "Select a project first." : ""}
+                    </div>
                   </div>
                 </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+              </ModuleToggle>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 40 }}>
-        <p className="caption" style={{ margin: 0, maxWidth: 460 }}>
-          Credentials are kept in memory for this session only. They're never sent to any server you don't own, and they're cleared on refresh.
-        </p>
-        <button className="btn btn-primary" onClick={() => onRun(enabled, creds)} disabled={!ready}>
-          <Icon name="play" size={13} /> Run audit
-        </button>
-      </div>
-    </>
+            </div>
+          </div>
+
+          {/* Run button */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 40 }}>
+            <p className="caption" style={{ margin: 0, maxWidth: 460 }}>
+              Credentials are kept in memory for this session only. They're never sent to any server you don't own, and they're cleared on refresh.
+            </p>
+            <button className="btn btn-primary" onClick={() => onRun(enabled, creds)} disabled={!ready}>
+              <Icon name="play" size={13} /> Run audit
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 
-const ModuleToggle = ({ num, name, desc, on, onToggle, icon }) => (
-  <div
-    onClick={onToggle}
-    style={{
-      padding: 18,
-      background: on ? "#fff" : "var(--bg-2)",
-      border: `1px solid ${on ? "var(--accent)" : "var(--border)"}`,
-      borderRadius: 4,
-      cursor: "pointer",
-      transition: "all 200ms",
-      boxShadow: on ? "0 0 0 3px var(--cro-blue-25)" : "none",
-    }}
-  >
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-      <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{
-          width: 32, height: 32, display: "grid", placeItems: "center",
-          background: on ? "var(--accent)" : "var(--bg-3)",
-          color: on ? "#fff" : "var(--fg-3)", borderRadius: 3,
-        }}>
-          <Icon name={icon} size={16} />
-        </span>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-3)" }}>MODULE {num}</span>
-      </span>
+const ModuleToggle = ({ num, name, desc, on, onToggle, icon, children }) => (
+  <div style={{
+    background: on ? "var(--surface-0)" : "var(--surface-2)",
+    border: `1px solid ${on ? "var(--accent)" : "var(--border)"}`,
+    borderRadius: "var(--radius)",
+    transition: "all 200ms var(--ease-standard)",
+  }}>
+    <div
+      onClick={onToggle}
+      style={{ display: "flex", alignItems: "center", gap: 14, padding: 18, cursor: "pointer" }}
+    >
       <span style={{
-        width: 18, height: 18, borderRadius: 3,
+        width: 32, height: 32, display: "grid", placeItems: "center", flexShrink: 0,
+        background: on ? "var(--accent)" : "var(--bg-3)",
+        color: on ? "#fff" : "var(--fg-3)", borderRadius: 3,
+      }}>
+        <Icon name={icon} size={16} />
+      </span>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 3 }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--fg-4)", letterSpacing: "0.1em" }}>{num}</span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: "var(--fg-1)" }}>{name}</span>
+        </div>
+        <div style={{ fontSize: 13, color: "var(--fg-2)", lineHeight: 1.45 }}>{desc}</div>
+      </div>
+      <span style={{
+        width: 18, height: 18, borderRadius: 3, flexShrink: 0,
         border: `1.5px solid ${on ? "var(--accent)" : "var(--border-strong)"}`,
-        background: on ? "var(--accent)" : "#fff",
+        background: on ? "var(--accent)" : "transparent",
         display: "grid", placeItems: "center", color: "#fff",
       }}>
         {on && <Icon name="check" size={11} strokeWidth={3} />}
       </span>
     </div>
-    <div style={{ fontSize: 15, fontWeight: 800, color: "var(--fg-1)", marginBottom: 4 }}>{name}</div>
-    <div style={{ fontSize: 13, color: "var(--fg-2)", lineHeight: 1.45 }}>{desc}</div>
+    {on && children && (
+      <div style={{ padding: "0 18px 18px", borderTop: "1px solid var(--border)" }}>
+        <div style={{ paddingTop: 16 }}>{children}</div>
+      </div>
+    )}
   </div>
 );
 
