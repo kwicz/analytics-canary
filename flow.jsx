@@ -22,10 +22,8 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
       oauthToken: "",
       oauthEmail: "",
       // Service account (advanced)
-      serviceAccount: "",
     };
   });
-  const [authTab, setAuthTab] = useState("oauth"); // "oauth" | "serviceaccount"
   const [lists, setLists] = useState({ gtm: null, ga4: null, bq: null, loading: false, errors: {} });
   const [bqDatasets, setBqDatasets] = useState(null);
   const [bqDatasetsLoading, setBqDatasetsLoading] = useState(false);
@@ -38,7 +36,7 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
   }, [creds.clientId]);
 
   const needsAuth = enabled.gtm || enabled.ga4 || enabled.bq;
-  const hasAuth = creds.oauthToken || creds.serviceAccount;
+  const hasAuth = !!creds.oauthToken;
   const hasGtmId = !enabled.gtm || creds.gtm;
   const hasGa4Id = !enabled.ga4 || creds.ga4PropertyId;
   const hasBqId = !enabled.bq || (creds.bqProject && creds.bqDataset);
@@ -171,119 +169,57 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
 
           {/* ── Auth method ── */}
           <div style={{ marginBottom: 28 }}>
-              {/* Tab bar */}
-              <div style={{ display: "flex", borderBottom: "1px solid var(--border)", marginBottom: 20 }}>
-                {[{ id: "oauth", label: "Sign in with Google" }, { id: "serviceaccount", label: "Service Account" }].map(tab => (
-                  <button key={tab.id} onClick={() => setAuthTab(tab.id)} style={{
-                    appearance: "none", border: "none", background: "none", cursor: "pointer",
-                    padding: "6px 14px 10px", fontSize: 12.5, fontWeight: 600,
-                    fontFamily: "var(--font-sans)", letterSpacing: 0,
-                    color: authTab === tab.id ? "var(--accent)" : "var(--fg-3)",
-                    borderBottom: `2px solid ${authTab === tab.id ? "var(--accent)" : "transparent"}`,
-                    marginBottom: -1,
-                  }}>{tab.label}</button>
-                ))}
-              </div>
-
-              {/* Google OAuth tab */}
-              {authTab === "oauth" && (
-                <div>
-                  {/* Connected state */}
-                  {creds.oauthToken ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{
-                        display: "flex", alignItems: "center", gap: 8, flex: 1,
-                        padding: "10px 14px", borderRadius: 6,
-                        background: "rgba(98,196,160,0.08)", border: "1px solid rgba(98,196,160,0.3)",
-                      }}>
-                        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cro-green)", flexShrink: 0 }} />
-                        <span style={{ fontWeight: 600, color: "var(--fg-1)" }}>{creds.oauthEmail}</span>
-                        <span style={{ color: "var(--fg-3)", fontSize: 12 }}>— connected</span>
-                      </div>
-                      {Object.keys(lists.errors || {}).length > 0 && !lists.loading && (
-                        <button
-                          className="btn btn-primary"
-                          style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                          onClick={() => fetchLists(creds.oauthToken)}
-                        >
-                          ↻ Retry
-                        </button>
-                      )}
-                      <button
-                        className="btn"
-                        style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                        onClick={() => { setCreds({ ...creds, oauthToken: "", oauthEmail: "" }); setLists({ gtm: null, ga4: null, loading: false, errors: {} }); }}
-                      >
-                        Sign out
-                      </button>
-                    </div>
-                  ) : creds.clientId ? (
-                    /* Client ID pre-filled — just show the button */
-                    <div>
-                      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 0", fontSize: 14 }} onClick={signIn}>
-                        Sign in with Google
-                      </button>
-                      <div className="input-help">
-                        {"Sign in with the Google account that has access to your clients' GTM containers, GA4 properties, and BigQuery datasets."}
-                      </div>
-                    </div>
-                  ) : (
-                    /* No Client ID yet — show the input */
-                    <div>
-                      <label className="input-label">
-                        OAuth Client ID
-                        <Tooltip content={
-                          <div>
-                            <div style={{ fontWeight: 800, color: "#fff", marginBottom: 8, fontSize: 11, letterSpacing: 0.8, textTransform: "uppercase" }}>One-time setup</div>
-                            {[
-                              <>Go to <span style={{ color: "#4A9AD0" }}>console.cloud.google.com</span> → APIs &amp; Services → Credentials</>,
-                              <>Click <strong style={{ color: "#fff" }}>Create Credentials</strong> → OAuth 2.0 Client ID → Web application</>,
-                              <>Under <strong style={{ color: "#fff" }}>Authorized JavaScript origins</strong> add <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>http://localhost:8080</span></>,
-                              <>Copy the Client ID — it ends in <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>.apps.googleusercontent.com</span></>,
-                            ].map((step, i) => (
-                              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                                <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#7F7F7F", marginTop: 1, flexShrink: 0 }}>{i + 1}.</span>
-                                <span>{step}</span>
-                              </div>
-                            ))}
-                          </div>
-                        } />
-                      </label>
-                      <div style={{ display: "flex", gap: 10 }}>
-                        <input
-                          className="input"
-                          style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 11.5 }}
-                          placeholder="123456789-xxxx.apps.googleusercontent.com"
-                          value={creds.clientId}
-                          onChange={e => setCreds({ ...creds, clientId: e.target.value, oauthToken: "", oauthEmail: "" })}
-                        />
-                        <button
-                          className="btn btn-primary"
-                          style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-                          onClick={signIn}
-                          disabled={!creds.clientId.trim()}
-                        >
-                          Sign in with Google
-                        </button>
-                      </div>
-                      <div className="input-help">Paste your OAuth Client ID from Google Cloud Console, then sign in.</div>
-                    </div>
+              {creds.oauthToken ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8, flex: 1,
+                    padding: "10px 14px", borderRadius: 6,
+                    background: "rgba(98,196,160,0.08)", border: "1px solid rgba(98,196,160,0.3)",
+                  }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--cro-green)", flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, color: "var(--fg-1)" }}>{creds.oauthEmail}</span>
+                    <span style={{ color: "var(--fg-3)", fontSize: 12 }}>— connected</span>
+                  </div>
+                  {Object.keys(lists.errors || {}).length > 0 && !lists.loading && (
+                    <button
+                      className="btn btn-primary"
+                      style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                      onClick={() => fetchLists(creds.oauthToken)}
+                    >
+                      ↻ Retry
+                    </button>
                   )}
+                  <button
+                    className="btn"
+                    style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                    onClick={() => { setCreds({ ...creds, oauthToken: "", oauthEmail: "" }); setLists({ gtm: null, ga4: null, loading: false, errors: {} }); }}
+                  >
+                    Sign out
+                  </button>
                 </div>
-              )}
-
-              {/* Service Account tab */}
-              {authTab === "serviceaccount" && (
+              ) : creds.clientId ? (
+                /* Client ID pre-filled — just show the button */
+                <div>
+                  <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 0", fontSize: 14 }} onClick={signIn}>
+                    Sign in with Google
+                  </button>
+                  <div className="input-help">
+                    {"Sign in with the Google account that has access to your clients' GTM containers, GA4 properties, and BigQuery datasets."}
+                  </div>
+                </div>
+              ) : (
+                /* No Client ID yet — show the input */
                 <div>
                   <label className="input-label">
-                    Service Account JSON
+                    OAuth Client ID
                     <Tooltip content={
                       <div>
-                        <div style={{ fontWeight: 800, color: "#fff", marginBottom: 8, fontSize: 11, letterSpacing: 0.8, textTransform: "uppercase" }}>How to create one</div>
+                        <div style={{ fontWeight: 800, color: "#fff", marginBottom: 8, fontSize: 11, letterSpacing: 0.8, textTransform: "uppercase" }}>One-time setup</div>
                         {[
-                          <>Go to <span style={{ color: "#4A9AD0" }}>console.cloud.google.com</span> → IAM &amp; Admin → Service Accounts</>,
-                          <>Select your service account → Keys tab → Add Key → Create new key → JSON</>,
-                          <>Grant the account <strong style={{ color: "#fff" }}>Viewer</strong> access on your GTM container and GA4 property</>,
+                          <>Go to <span style={{ color: "#4A9AD0" }}>console.cloud.google.com</span> → APIs &amp; Services → Credentials</>,
+                          <>Click <strong style={{ color: "#fff" }}>Create Credentials</strong> → OAuth 2.0 Client ID → Web application</>,
+                          <>Under <strong style={{ color: "#fff" }}>Authorized JavaScript origins</strong> add <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>http://localhost:8080</span></>,
+                          <>Copy the Client ID — it ends in <span style={{ color: "#50E3C2", fontFamily: "var(--font-mono)", fontSize: 11 }}>.apps.googleusercontent.com</span></>,
                         ].map((step, i) => (
                           <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
                             <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "#7F7F7F", marginTop: 1, flexShrink: 0 }}>{i + 1}.</span>
@@ -293,14 +229,24 @@ const Setup = ({ onRun, defaultEnabled, defaultClientId }) => {
                       </div>
                     } />
                   </label>
-                  <textarea
-                    className="textarea"
-                    placeholder='{"type":"service_account","project_id":"..."}'
-                    style={{ minHeight: 88, fontFamily: "var(--font-mono)", fontSize: 11.5 }}
-                    value={creds.serviceAccount}
-                    onChange={e => setCreds({ ...creds, serviceAccount: e.target.value })}
-                  />
-                  <div className="input-help">The service account needs Viewer access on your GTM container and GA4 property.</div>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <input
+                      className="input"
+                      style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 11.5 }}
+                      placeholder="123456789-xxxx.apps.googleusercontent.com"
+                      value={creds.clientId}
+                      onChange={e => setCreds({ ...creds, clientId: e.target.value, oauthToken: "", oauthEmail: "" })}
+                    />
+                    <button
+                      className="btn btn-primary"
+                      style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                      onClick={signIn}
+                      disabled={!creds.clientId.trim()}
+                    >
+                      Sign in with Google
+                    </button>
+                  </div>
+                  <div className="input-help">Paste your OAuth Client ID from Google Cloud Console, then sign in.</div>
                 </div>
               )}
             </div>
@@ -530,7 +476,7 @@ function buildRunSteps(enabled, creds) {
   const steps = [];
   const gtmId  = creds.gtm          || "GTM container";
   const ga4Id  = creds.ga4PropertyId || "GA4 property";
-  const isDemoMode = !creds.oauthToken && !creds.serviceAccount;
+  const isDemoMode = !creds.oauthToken;
 
   if (!isDemoMode && (enabled.gtm || enabled.ga4)) {
     steps.push({ mod: "", text: "Authenticating with Google APIs…", delay: 400 });

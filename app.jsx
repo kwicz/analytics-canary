@@ -12,18 +12,12 @@ const DEFAULT_TWEAKS = /*EDITMODE-BEGIN*/{
 const DEFAULT_CLIENT_ID = /*EDITMODE-BEGIN*/"279421537358-65oaafqicevvkt59bg910uv9n0l60o9h.apps.googleusercontent.com"/*EDITMODE-END*/;
 
 async function runRealAudit(enabled, creds) {
-  const hasAuth = creds.oauthToken || creds.serviceAccount;
-  if (!hasAuth) return null; // no credentials → demo mode
+  if (!creds.oauthToken) return null; // no credentials → demo mode
 
-  // Auth — pick the right endpoint based on credential type
-  const authResp = await fetch(creds.oauthToken ? '/api/auth-oauth' : '/api/auth', {
+  const authResp = await fetch('/api/auth-oauth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(
-      creds.oauthToken
-        ? { accessToken: creds.oauthToken }
-        : { serviceAccount: creds.serviceAccount }
-    ),
+    body: JSON.stringify({ accessToken: creds.oauthToken }),
   });
   const { sessionId, error: authError } = await authResp.json();
   if (authError) throw new Error(authError);
